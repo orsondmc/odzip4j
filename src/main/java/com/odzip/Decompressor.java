@@ -1,5 +1,9 @@
 package com.odzip;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * Decompressor for ODZ format
  */
@@ -63,5 +67,29 @@ public final class Decompressor {
         }
         
         return out;
+    }
+    
+    /**
+     * Decompress data from an InputStream and write to an OutputStream
+     * 
+     * @param in Input stream to read compressed data from
+     * @param out Output stream to write decompressed data to
+     * @throws IOException if an I/O error occurs
+     */
+    public static void decompress(InputStream in, OutputStream out) throws IOException {
+        byte[] compressed = readAll(in);
+        byte[] decompressed = decompressSimple(compressed);
+        out.write(decompressed);
+        out.flush();
+    }
+    
+    private static byte[] readAll(InputStream in) throws IOException {
+        java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+        byte[] temp = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = in.read(temp)) != -1) {
+            buffer.write(temp, 0, bytesRead);
+        }
+        return buffer.toByteArray();
     }
 }

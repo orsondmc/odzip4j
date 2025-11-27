@@ -28,6 +28,8 @@ java -jar target/odzip4j-1.0.0.jar d output.odz output.txt
 
 ### As a Library
 
+#### Byte Array API
+
 ```java
 import com.odzip.Compressor;
 import com.odzip.Decompressor;
@@ -37,6 +39,40 @@ byte[] compressed = Compressor.compressSimple(inputBytes);
 
 // Decompress
 byte[] decompressed = Decompressor.decompressSimple(compressed);
+```
+
+#### Streaming API
+
+```java
+import com.odzip.*;
+import java.io.*;
+
+// Compress from InputStream to OutputStream
+try (FileInputStream in = new FileInputStream("input.txt");
+     FileOutputStream out = new FileOutputStream("output.odz")) {
+    Compressor.compress(in, out);
+}
+
+// Decompress from InputStream to OutputStream
+try (FileInputStream in = new FileInputStream("output.odz");
+     FileOutputStream out = new FileOutputStream("output.txt")) {
+    Decompressor.decompress(in, out);
+}
+
+// Using OdzOutputStream (buffers data, compresses on close)
+try (OdzOutputStream out = new OdzOutputStream(new FileOutputStream("output.odz"))) {
+    out.write(data);
+    // Compression happens automatically on close()
+}
+
+// Using OdzInputStream (decompresses on first read)
+try (OdzInputStream in = new OdzInputStream(new FileInputStream("output.odz"))) {
+    byte[] buffer = new byte[8192];
+    int bytesRead;
+    while ((bytesRead = in.read(buffer)) != -1) {
+        // Process decompressed data
+    }
+}
 ```
 
 ## Format

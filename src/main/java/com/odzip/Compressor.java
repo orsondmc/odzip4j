@@ -1,5 +1,8 @@
 package com.odzip;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,5 +101,29 @@ public final class Compressor {
         }
         
         return result;
+    }
+    
+    /**
+     * Compress data from an InputStream and write to an OutputStream
+     * 
+     * @param in Input stream to read from
+     * @param out Output stream to write compressed data to
+     * @throws IOException if an I/O error occurs
+     */
+    public static void compress(InputStream in, OutputStream out) throws IOException {
+        byte[] input = readAll(in);
+        byte[] compressed = compressSimple(input);
+        out.write(compressed);
+        out.flush();
+    }
+    
+    private static byte[] readAll(InputStream in) throws IOException {
+        java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+        byte[] temp = new byte[8192];
+        int bytesRead;
+        while ((bytesRead = in.read(temp)) != -1) {
+            buffer.write(temp, 0, bytesRead);
+        }
+        return buffer.toByteArray();
     }
 }
